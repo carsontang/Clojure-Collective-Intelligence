@@ -32,17 +32,16 @@
 ; The following function is a bit messy. Make it more readable.
 ; Tips
 ; 1) do you have to convert prefs person1/2 to sets?
-; 2) Remove 2nd let
-; 3) Look at code from "Practical Clojure" and combine 1/ and inc
 (defn sim-distance [prefs person1 person2]
    "Returns a distance-based similarity score for person1 and person2"
-   (let [items1 (set (keys (prefs person1)))
-         items2 (set (keys (prefs person2)))
+   (let [p1-prefs (prefs person1)
+         p2-prefs (prefs person2)
+         items1 (set (keys p1-prefs))
+         items2 (set (keys p2-prefs))
          shared-items (intersection items1 items2)]
       (if-not (empty? shared-items)
-         (let []
-            (/ 1 (inc (reduce +
-               (map
-                  (fn [shared-item] (Math/pow (- ((prefs person1) shared-item) ((prefs person2) shared-item)) 2))
-                  shared-items)))))
+         ((comp (partial / 1) inc) (reduce +
+            (map (fn [shared-item]
+               (Math/pow (- (p1-prefs shared-item) (p2-prefs shared-item)) 2))
+               shared-items)))
          0)))
